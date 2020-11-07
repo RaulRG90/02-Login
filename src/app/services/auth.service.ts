@@ -9,13 +9,10 @@ import { map } from "rxjs/operators";
 })
 export class AuthService {
   private url = 'https://tsiete.com.mx/librosRincon/';
-  private key = 'AIzaSyBd3qewgoxNRHnbKGj8AWbGvd_OOYCUKXU';
-  userToken: string;
-  //crear nuevos usuarios
-  //https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[API_KEY]
+  //private url = 'http://localhost/librosRincon/';
 
-  //login
-  //https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]
+  userToken: string;
+  verToken:string;
 
   constructor( private http:HttpClient ) {
     //lee si existe algun token en la aplicacion
@@ -88,11 +85,36 @@ export class AuthService {
     expiraDate.setTime( expira );
     
     //valida el tiempo a partir de token (preferente mente se debe de validar en el back con un registro de entrada y salida)
-    if( expiraDate > new Date ){
+    if(this.busquedadetoken() && expiraDate > new Date){
       return true;
     }else{
       return false;
     }
+  }
+
+  //hace la busqueda en mysql del token y el usuario, para verificar que este activo el mismo token
+  busquedadetoken() {
+    //agrega los datos que se requieren para hacer la busqueda
+    const tokenData = {
+      "token": localStorage.getItem('token'),
+      "usuario": localStorage.getItem('email')
+    };
+    //console.log(tokenData);
+    //ubicacion del php para buscar token
+    return this.http.post(
+      `${this.url}busquedaToken.php`, tokenData
+    ).pipe(
+      map( resp => {
+        //console.log(resp);
+        //verifica si existe token y envia bandera
+        if(resp['token']){
+          return true;
+        }else{
+          return false;
+        }
+        
+      })
+    );
   }
 
 }

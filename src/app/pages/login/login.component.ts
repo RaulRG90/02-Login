@@ -25,9 +25,9 @@ export class LoginComponent implements OnInit {
     this.usuario = new UsuarioModel();
 
     //recuerda bandera de check y email
-    if( localStorage.getItem('email')){
+    if( localStorage.getItem('recordarme') ){
       this.usuario.email = localStorage.getItem('email');
-      this.recordarme = true;
+      this.usuario.recordarme = true;
     }
 
   }
@@ -51,14 +51,11 @@ export class LoginComponent implements OnInit {
       //console.log(resp);
       //cancela swealert2 loading
       Swal.close();
-      
+      if(this.usuario.recordarme){
+        localStorage.setItem('recordarme', 'true');
+      }
       //redirecciona a home si los datos son correctos
       this.router.navigateByUrl('/home');
-
-      //si la bandera del check esta en true se aplica el localstorage
-      if ( this.recordarme ) {
-        localStorage.setItem( 'email', this.usuario.email );
-      }
 
     }, (err) => {
       console.log(err);

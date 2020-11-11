@@ -7,34 +7,42 @@ import { AuthService } from '../services/auth.service';
 })
 export class AuthGuard implements CanActivate {
   
-  valoy: boolean = false;
-
+  esverdad: boolean = false;
+  resp = {};
   constructor(private auth: AuthService,
               private router: Router){}
   //este se ejecuta cuando entra a las paginas protegida, esta en app-routing-module.ts
   canActivate(): boolean {
-    //console.log('Guard');
-
-    this.auth.busquedadetoken().
-    subscribe(data => {
-      this.valoy = true;
-    });
-
-    if ( this.auth.estaAutenticado() ) {
-      if ( this.valoy ) {
-        console.log('true guard busqueda');
-        return true ;
-      } else {
-        console.log('false guard busqueda');
-        this.router.navigateByUrl('/login');
-        return false;
-      }
-    }
-    if( !this.auth.estaAutenticado() ){
-      console.log('false guard esta autenticado');
+  //console.log('Guard');
+  if( localStorage.getItem('token') && localStorage.getItem('email') ){
+    this.esverdad = this.otracosa();
+    if( this.esverdad ){
+      return true;
+    }else{
       this.router.navigateByUrl('/login');
       return false;
-      
     }
+
+  }else{
+    this.router.navigateByUrl('/login');
+    return false;
   }
+
+  }
+
+  otracosa(): boolean{
+    this.auth.busquedadetoken().subscribe(
+      data => {
+        this.resp = data;
+      },(err) => {
+        this.resp = false;
+      });
+    if( this.resp ){
+        return true;
+      }else{
+        return false;
+      }
+  }
+  
+  
 }

@@ -19,11 +19,19 @@ export class AuthGuard implements CanActivate {
     if( this.esverdad ){
       return true;
     }else{
+      localStorage.removeItem('token');
+      localStorage.removeItem('nombre');
+      localStorage.removeItem('email');
+      localStorage.removeItem('recordarme');
       this.router.navigateByUrl('/login');
       return false;
     }
 
   }else{
+    localStorage.removeItem('token');
+    localStorage.removeItem('nombre');
+    localStorage.removeItem('email');
+    localStorage.removeItem('recordarme');
     this.router.navigateByUrl('/login');
     return false;
   }
